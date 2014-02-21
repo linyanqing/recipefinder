@@ -95,8 +95,10 @@ public class RecipeFinderServiceImplTest {
 
         //construct fridge items
         Calendar c = Calendar.getInstance();
+        c.add(Calendar.DATE, 1);
         Date useBy = new Date(c.getTimeInMillis());
-        c.add(Calendar.DATE, -1);
+
+        c.add(Calendar.DATE, -5);
         Date useByExpired = new Date(c.getTimeInMillis());
 
         FridgeItem expiredFridgeItem = new FridgeItem("mixed salad", 150, MeasureUnit.grams, useByExpired);

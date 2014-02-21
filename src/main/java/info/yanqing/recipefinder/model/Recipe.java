@@ -5,7 +5,7 @@ import java.util.List;
 public class Recipe
 {
 	private String name;
-	private List<FridgeItem> ingredients;
+	private List<IngredientItem> ingredients;
 	
 	public String getName()
 	{
@@ -16,14 +16,12 @@ public class Recipe
 	{
 		this.name = name;
 	}
-	
-	public List<FridgeItem> getIngredients()
-	{
-		return ingredients;
-	}
-	
-	public void setIngredients(List<FridgeItem> ingredients)
-	{
-		this.ingredients = ingredients;
-	}
+
+    public List<IngredientItem> getIngredients() {
+        return ingredients;
+    }
+
+    public void setIngredients(List<IngredientItem> ingredients) {
+        this.ingredients = ingredients;
+    }
 }

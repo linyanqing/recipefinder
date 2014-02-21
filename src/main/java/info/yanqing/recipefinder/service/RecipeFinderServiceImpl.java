@@ -1,10 +1,13 @@
 package info.yanqing.recipefinder.service;
 
 import info.yanqing.recipefinder.model.FridgeItem;
+import info.yanqing.recipefinder.model.IngredientItem;
 import info.yanqing.recipefinder.model.MeasureUnit;
 import info.yanqing.recipefinder.model.Recipe;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
@@ -78,16 +81,56 @@ public class RecipeFinderServiceImpl implements RecipeFinderService
 
     public String getValidRecipe(List<Recipe> recipes, List<FridgeItem> ingredients)
 	{
-		List<FridgeItem> validIngredients = new ArrayList<FridgeItem>();
+        String recommendedRecipe = "Order Takeout";
+        List<Recipe> recommendedRecipeList = new ArrayList<Recipe>();
+        List<Recipe> invalidRecipeList = new ArrayList<Recipe>();
 
-        validIngredients = getValidFridgeItems(ingredients);
-        if (validIngredients.size() == 0)
-			return "Order Takeout";
+        // get a list of not expired fridge items
+		List<FridgeItem> fridgeItemList = getValidFridgeItems(ingredients);
+        for (Recipe recipe : recipes){
+            List<IngredientItem> ingredientItems = recipe.getIngredients();
+            boolean isValidRecipe = true;
+            for(IngredientItem ingredientItem : ingredientItems){
+                // check if the ingredientItem exists in fridgeItemList
+                boolean isFoundInFridge = false;
+                for(FridgeItem fridgeItem : fridgeItemList){
+                   if (StringUtils.equalsIgnoreCase(ingredientItem.getItem(), fridgeItem.getItem()) ){
+                       isFoundInFridge = true;
+                       break;
+                   }
+                }
+                // if one of ingredients could not be found in fridge, the recipe is invalid
+                if(!isFoundInFridge){
+                    isValidRecipe = false;
+                    break;
+                }
+            }
+            // add the invalid recipe into invalidRecipeList
+            if(!isValidRecipe){
+                invalidRecipeList.add(recipe);
+            }
+        }
+
+        recommendedRecipeList.addAll(CollectionUtils.removeAll(recipes, invalidRecipeList));
+
+
+
+        return recommendedRecipe;
+
+         ////////////////////   fridgeItemList
+        /*
+        if (CollectionUtils.isEmpty(validIngredients)){
+            return "Order Takeout";
+        }
+
 		Recipe canCookRecipe = null;
 		Date recipeUseBy = null;
-		for (Recipe recipe : recipes)
+
+        for (Recipe recipe : recipes)
 		{
-			List<FridgeItem> neededIngredients = recipe.getIngredients();
+
+
+			List<IngredientItem> neededIngredients = recipe.getIngredients();
 			Date useBy = checkCanCookAndReturnUsedBy(neededIngredients, validIngredients);
 			if (useBy != null)
 			{
@@ -107,6 +150,7 @@ public class RecipeFinderServiceImpl implements RecipeFinderService
 		if (canCookRecipe != null)
 			return canCookRecipe.getName();
 		return "Order Takeout";
+		*/
 	}
 
     public List<FridgeItem> getValidFridgeItems(List<FridgeItem> ingredients) {
@@ -114,7 +158,6 @@ public class RecipeFinderServiceImpl implements RecipeFinderService
         for (FridgeItem ingredient : ingredients)
         {
             Calendar c = Calendar.getInstance();
-            c.add(Calendar.DATE, -1);
             // expired item
             if (c.getTimeInMillis() < ingredient.getUseBy().getTime())
             {
@@ -150,28 +193,53 @@ public class RecipeFinderServiceImpl implements RecipeFinderService
 		return fridgeItemList;
 	}
 	
-	public Date checkCanCookAndReturnUsedBy(List<FridgeItem> neededIngredients, List<FridgeItem> ingredients)
+	public Date checkCanCookAndReturnUsedBy(List<IngredientItem> ingredientItems, List<FridgeItem> fridgeItems)
 	{
 		int i = 0;
 		Date usedBy = null;
-		for (FridgeItem ingredient : neededIngredients)
+		for (IngredientItem ingredient : ingredientItems)
 		{
 			
-			for (FridgeItem hasIngredient : ingredients)
+			for (FridgeItem fridgeItem : fridgeItems)
 			{
-				if (ingredient.getItem().equals(hasIngredient.getItem())
-						&& hasIngredient.getAmount() > ingredient.getAmount())
+				if (ingredient.getItem().equals(fridgeItem.getItem())
+						&& fridgeItem.getAmount() > ingredient.getAmount())
 				{
 					i++;
-					if (usedBy == null || usedBy.getTime() > hasIngredient.getUseBy().getTime())
-						usedBy = hasIngredient.getUseBy();
+					if (usedBy == null || usedBy.getTime() > fridgeItem.getUseBy().getTime())
+						usedBy = fridgeItem.getUseBy();
 					break;
 				}
 			}
 		}
-		if (i == neededIngredients.size())
+		if (i == ingredientItems.size())
 			return usedBy;
 		return null;
 	}
-	
+
+    /*
+    public List<Recipe> getValidRecipes(List<IngredientItem> ingredientItems, List<FridgeItem> fridgeItems)
+    	{
+    		int i = 0;
+    		Date usedBy = null;
+    		for (IngredientItem ingredient : ingredientItems)
+    		{
+
+    			for (FridgeItem fridgeItem : fridgeItems)
+    			{
+    				if (ingredient.getItem().equals(fridgeItem.getItem())
+    						&& fridgeItem.getAmount() > ingredient.getAmount())
+    				{
+    					i++;
+    					if (usedBy == null || usedBy.getTime() > fridgeItem.getUseBy().getTime())
+    						usedBy = fridgeItem.getUseBy();
+    					break;
+    				}
+    			}
+    		}
+    		if (i == ingredientItems.size())
+    			return usedBy;
+    		return null;
+    	}
+	  */
 }
