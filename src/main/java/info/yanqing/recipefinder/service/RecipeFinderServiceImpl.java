@@ -18,6 +18,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -89,13 +90,19 @@ public class RecipeFinderServiceImpl implements RecipeFinderService
 		List<FridgeItem> fridgeItemList = getValidFridgeItems(ingredients);
         for (Recipe recipe : recipes){
             List<IngredientItem> ingredientItems = recipe.getIngredients();
+            Date closetUsedBy = new Date(10000000);
             boolean isValidRecipe = true;
+            IngredientItem closestUsedByIngredientItem = null;
             for(IngredientItem ingredientItem : ingredientItems){
                 // check if the ingredientItem exists in fridgeItemList
                 boolean isFoundInFridge = false;
                 for(FridgeItem fridgeItem : fridgeItemList){
                    if (StringUtils.equalsIgnoreCase(ingredientItem.getItem(), fridgeItem.getItem()) ){
                        isFoundInFridge = true;
+                       if(closetUsedBy.before(fridgeItem.getUseBy())){
+                            closestUsedByIngredientItem = ingredientItem;
+                            closetUsedBy = fridgeItem.getUseBy();
+                       }
                        break;
                    }
                 }
@@ -105,13 +112,19 @@ public class RecipeFinderServiceImpl implements RecipeFinderService
                     break;
                 }
             }
-            // add the invalid recipe into invalidRecipeList
-            if(!isValidRecipe){
-                invalidRecipeList.add(recipe);
+            // add the valid recipe into recommendedRecipeList
+            if(isValidRecipe){
+                recipe.setClosestUsedByIngredient(closestUsedByIngredientItem);
+                recipe.setClosestUsedBy(closetUsedBy);
+                recommendedRecipeList.add(recipe);
             }
         }
 
-        recommendedRecipeList.addAll(CollectionUtils.removeAll(recipes, invalidRecipeList));
+        if(CollectionUtils.isNotEmpty(recommendedRecipeList)){
+            Collections.sort(recommendedRecipeList);
+            recommendedRecipe = recommendedRecipeList.get(0).getName();
+        }
+
 
 
 
