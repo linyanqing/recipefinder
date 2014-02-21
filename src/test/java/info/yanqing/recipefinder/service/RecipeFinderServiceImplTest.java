@@ -35,17 +35,6 @@ public class RecipeFinderServiceImplTest {
     @Autowired
     private RecipeFinderService recipeFinderService;
 
-    @Test
-    public void testFindRecipe() throws Exception {
-        
-
-    }
-
-
-    @Test
-    public void testParseFileItemToString() throws Exception {
-
-    }
 
     @Test
     public void testGetFridgeItemsFromString() throws Exception {
@@ -60,7 +49,7 @@ public class RecipeFinderServiceImplTest {
         List<FridgeItem> fridgeItemList =  recipeFinderService.getFridgeItemsFromString(content);
 
         //assertion for list size
-        Assert.assertEquals(5,fridgeItemList.size());
+        Assert.assertEquals(5, fridgeItemList.size());
 
         //assertion for list element
         Date useBy = DDMMYYYY.parse("26/12/2014");
