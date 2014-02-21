@@ -124,46 +124,7 @@ public class RecipeFinderServiceImpl implements RecipeFinderService
             Collections.sort(recommendedRecipeList);
             recommendedRecipe = recommendedRecipeList.get(0).getName();
         }
-
-
-
-
         return recommendedRecipe;
-
-         ////////////////////   fridgeItemList
-        /*
-        if (CollectionUtils.isEmpty(validIngredients)){
-            return "Order Takeout";
-        }
-
-		Recipe canCookRecipe = null;
-		Date recipeUseBy = null;
-
-        for (Recipe recipe : recipes)
-		{
-
-
-			List<IngredientItem> neededIngredients = recipe.getIngredients();
-			Date useBy = checkCanCookAndReturnUsedBy(neededIngredients, validIngredients);
-			if (useBy != null)
-			{
-				if (recipeUseBy == null)
-				{
-					canCookRecipe = recipe;
-					recipeUseBy = useBy;
-				}
-				else
-				{
-					if (useBy.getTime() < recipeUseBy.getTime())
-						recipeUseBy = useBy;
-					canCookRecipe = recipe;
-				}
-			}
-		}
-		if (canCookRecipe != null)
-			return canCookRecipe.getName();
-		return "Order Takeout";
-		*/
 	}
 
     public List<FridgeItem> getValidFridgeItems(List<FridgeItem> ingredients) {
@@ -205,54 +166,4 @@ public class RecipeFinderServiceImpl implements RecipeFinderService
 		}
 		return fridgeItemList;
 	}
-	
-	public Date checkCanCookAndReturnUsedBy(List<IngredientItem> ingredientItems, List<FridgeItem> fridgeItems)
-	{
-		int i = 0;
-		Date usedBy = null;
-		for (IngredientItem ingredient : ingredientItems)
-		{
-			
-			for (FridgeItem fridgeItem : fridgeItems)
-			{
-				if (ingredient.getItem().equals(fridgeItem.getItem())
-						&& fridgeItem.getAmount() > ingredient.getAmount())
-				{
-					i++;
-					if (usedBy == null || usedBy.getTime() > fridgeItem.getUseBy().getTime())
-						usedBy = fridgeItem.getUseBy();
-					break;
-				}
-			}
-		}
-		if (i == ingredientItems.size())
-			return usedBy;
-		return null;
-	}
-
-    /*
-    public List<Recipe> getValidRecipes(List<IngredientItem> ingredientItems, List<FridgeItem> fridgeItems)
-    	{
-    		int i = 0;
-    		Date usedBy = null;
-    		for (IngredientItem ingredient : ingredientItems)
-    		{
-
-    			for (FridgeItem fridgeItem : fridgeItems)
-    			{
-    				if (ingredient.getItem().equals(fridgeItem.getItem())
-    						&& fridgeItem.getAmount() > ingredient.getAmount())
-    				{
-    					i++;
-    					if (usedBy == null || usedBy.getTime() > fridgeItem.getUseBy().getTime())
-    						usedBy = fridgeItem.getUseBy();
-    					break;
-    				}
-    			}
-    		}
-    		if (i == ingredientItems.size())
-    			return usedBy;
-    		return null;
-    	}
-	  */
 }
