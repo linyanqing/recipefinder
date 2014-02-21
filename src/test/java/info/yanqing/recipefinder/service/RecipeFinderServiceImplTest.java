@@ -41,10 +41,6 @@ public class RecipeFinderServiceImplTest {
 
     }
 
-    @Test
-    public void testGetValidRecipe() throws Exception {
-
-    }
 
     @Test
     public void testParseFileItemToString() throws Exception {
@@ -86,8 +82,26 @@ public class RecipeFinderServiceImplTest {
     }
 
     @Test
-    public void testCheckCanCookAndReturnUsedBy() throws Exception {
+    public void testGetValidRecipe() throws Exception {
+        //getValidRecipe(List<Recipe> recipes, List<FridgeItem> ingredients)
 
+        String content = "[    {        \"name\":\"grilled cheese on toast\",        \"ingredients\":[            {                \"item\":\"bread\",                \"amount\":\"2\",                \"unit\":\"slices\"            },            {                \"item\":\"cheese\",                \"amount\":\"2\",                \"unit\":\"slices\"            }        ]    }    ,    {        \"name\":\"salad sandwich\",        \"ingredients\":[            {                \"item\":\"bread\",                \"amount\":\"2\",                \"unit\":\"slices\"            },            {                \"item\":\"mixed salad\",                \"amount\":\"100\",                \"unit\":\"grams\"            }        ]    }]";
+
+        //execute method
+        List<Recipe> recipes = recipeFinderService.getRecipesFromString(content);
+
+        content = "bread,10,slices,25/12/2014\n" +
+                        "cheese,10,slices,25/12/2014\n" +
+                        "butter,250,grams,25/12/2014\n" +
+                        "peanut butter,250,grams,2/12/2014\n" +
+                        "mixed salad,150,grams,26/12/2014";
+
+        //execute method
+        List<FridgeItem> fridgeItemList =  recipeFinderService.getFridgeItemsFromString(content);
+
+        String recipe = recipeFinderService.getValidRecipe(recipes, fridgeItemList);
+
+       Assert.assertEquals("grilled cheese on toast", recipe);
     }
 
     @Test

@@ -80,14 +80,14 @@ public class RecipeFinderServiceImpl implements RecipeFinderService
         return recipes;
     }
 
-    public String getValidRecipe(List<Recipe> recipes, List<FridgeItem> ingredients)
+    public String getValidRecipe(List<Recipe> recipes, List<FridgeItem> fridgeItems)
 	{
         String recommendedRecipe = "Order Takeout";
         List<Recipe> recommendedRecipeList = new ArrayList<Recipe>();
         List<Recipe> invalidRecipeList = new ArrayList<Recipe>();
 
         // get a list of not expired fridge items
-		List<FridgeItem> fridgeItemList = getValidFridgeItems(ingredients);
+		List<FridgeItem> fridgeItemList = getValidFridgeItems(fridgeItems);
         for (Recipe recipe : recipes){
             List<IngredientItem> ingredientItems = recipe.getIngredients();
             Date closetUsedBy = new Date(10000000);
@@ -120,6 +120,7 @@ public class RecipeFinderServiceImpl implements RecipeFinderService
             }
         }
 
+        //sort the result and get the the recommended recipe.
         if(CollectionUtils.isNotEmpty(recommendedRecipeList)){
             Collections.sort(recommendedRecipeList);
             recommendedRecipe = recommendedRecipeList.get(0).getName();

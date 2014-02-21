@@ -35,5 +35,20 @@ public interface RecipeFinderService
      */
     List<FridgeItem> getFridgeItemsFromString(String content) throws ParseException;
 
-    List<FridgeItem> getValidFridgeItems(List<FridgeItem> ingredients);
+    /**
+     * get valid fridge items which are not expired
+     * @param fridgeItems the items in fridge
+     * @return fridgeItem the fridge items which are not expired
+     */
+    List<FridgeItem> getValidFridgeItems(List<FridgeItem> fridgeItems);
+
+    /**
+     * get a recommended recipe based on provided
+     * @param recipes
+     * @param fridgeItems
+     * @return
+     */
+    String getValidRecipe(List<Recipe> recipes, List<FridgeItem> fridgeItems);
+
+
 }
