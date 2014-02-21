@@ -7,7 +7,6 @@ import info.yanqing.recipefinder.model.Recipe;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
@@ -90,19 +89,27 @@ public class RecipeFinderServiceImpl implements RecipeFinderService
 		List<FridgeItem> fridgeItemList = getValidFridgeItems(fridgeItems);
         for (Recipe recipe : recipes){
             List<IngredientItem> ingredientItems = recipe.getIngredients();
-            Date closetUsedBy = new Date(10000000);
+
             boolean isValidRecipe = true;
-            IngredientItem closestUsedByIngredientItem = null;
+
+            Date closetUsedBy = null;
+            long totalUsedByTime = 0l;
             for(IngredientItem ingredientItem : ingredientItems){
                 // check if the ingredientItem exists in fridgeItemList
                 boolean isFoundInFridge = false;
                 for(FridgeItem fridgeItem : fridgeItemList){
-                   if (StringUtils.equalsIgnoreCase(ingredientItem.getItem(), fridgeItem.getItem()) ){
+                    String fridgeItemName = fridgeItem.getItem();
+                    String ingredientItemName = ingredientItem.getItem();
+                   if (fridgeItemName != null && fridgeItemName.equalsIgnoreCase(ingredientItemName)){
                        isFoundInFridge = true;
-                       if(closetUsedBy.before(fridgeItem.getUseBy())){
-                            closestUsedByIngredientItem = ingredientItem;
+                       if(closetUsedBy == null){
+                           closetUsedBy = fridgeItem.getUseBy();
+                       }
+                       else if(closetUsedBy.after(fridgeItem.getUseBy())){
                             closetUsedBy = fridgeItem.getUseBy();
                        }
+                       totalUsedByTime += fridgeItem.getUseBy().getTime();
+
                        break;
                    }
                 }
@@ -114,8 +121,9 @@ public class RecipeFinderServiceImpl implements RecipeFinderService
             }
             // add the valid recipe into recommendedRecipeList
             if(isValidRecipe){
-                recipe.setClosestUsedByIngredient(closestUsedByIngredientItem);
+                recipe.setTotalUsedByTime(totalUsedByTime);
                 recipe.setClosestUsedBy(closetUsedBy);
+
                 recommendedRecipeList.add(recipe);
             }
         }

@@ -7,7 +7,7 @@ public class Recipe implements Comparable
 {
 	private String name;
 	private List<IngredientItem> ingredients;
-	private IngredientItem closestUsedByIngredient;
+	private long totalUsedByTime;
     private Date closestUsedBy;
 
 	public String getName()
@@ -28,12 +28,12 @@ public class Recipe implements Comparable
         this.ingredients = ingredients;
     }
 
-    public IngredientItem getClosestUsedByIngredient() {
-        return closestUsedByIngredient;
+    public long getTotalUsedByTime() {
+        return totalUsedByTime;
     }
 
-    public void setClosestUsedByIngredient(IngredientItem closestUsedByIngredient) {
-        this.closestUsedByIngredient = closestUsedByIngredient;
+    public void setTotalUsedByTime(long totalUsedByTime) {
+        this.totalUsedByTime = totalUsedByTime;
     }
 
     public Date getClosestUsedBy() {
@@ -86,7 +86,13 @@ public class Recipe implements Comparable
         if( !(o instanceof Recipe)){
             return 1;
         } else{
-           return this.getClosestUsedBy().compareTo( ((Recipe)o).getClosestUsedBy());
+            Recipe otherRecipe = (Recipe)o;
+           int result = this.getClosestUsedBy().compareTo( otherRecipe.getClosestUsedBy());
+           if(result ==0){
+               return (this.getTotalUsedByTime() < otherRecipe.getTotalUsedByTime() ? -1 : (this.getTotalUsedByTime()==otherRecipe.getTotalUsedByTime() ? 0 : 1));
+           } else{
+               return result;
+           }
 
 
         }

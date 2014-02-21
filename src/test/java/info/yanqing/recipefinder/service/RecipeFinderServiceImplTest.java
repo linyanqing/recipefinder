@@ -79,9 +79,9 @@ public class RecipeFinderServiceImplTest {
         //execute method
         List<Recipe> recipes = recipeFinderService.getRecipesFromString(content);
 
-        content = "bread,10,slices,25/12/2014\n" +
-                        "cheese,10,slices,25/12/2014\n" +
-                        "butter,250,grams,25/12/2014\n" +
+        content = "bread,10,slices,22/12/2014\n" +
+                        "cheese,10,slices,23/12/2014\n" +
+                        "butter,250,grams,24/12/2014\n" +
                         "peanut butter,250,grams,2/12/2014\n" +
                         "mixed salad,150,grams,26/12/2014";
 
@@ -90,7 +90,21 @@ public class RecipeFinderServiceImplTest {
 
         String recipe = recipeFinderService.getValidRecipe(recipes, fridgeItemList);
 
-       Assert.assertEquals("grilled cheese on toast", recipe);
+        Assert.assertEquals("grilled cheese on toast", recipe);
+
+
+        content = "bread,10,slices,22/12/2014\n" +
+                                "cheese,10,slices,23/12/2014\n" +
+                                "butter,250,grams,24/12/2014\n" +
+                                "peanut butter,250,grams,2/12/2014\n" +
+                                "mixed salad,150,grams,22/12/2014";
+
+                //execute method
+                fridgeItemList =  recipeFinderService.getFridgeItemsFromString(content);
+        recipe = recipeFinderService.getValidRecipe(recipes, fridgeItemList);
+
+               Assert.assertEquals("salad sandwich", recipe);
+
     }
 
     @Test
